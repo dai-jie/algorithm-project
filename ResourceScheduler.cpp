@@ -5,9 +5,9 @@ using namespace std;
 ResourceScheduler::ResourceScheduler(int tasktype, int caseID) {
 	taskType = tasktype;
 	srand((int)time(0));
-	numJob = 10, numHost = 1, alpha = 0.01;
+	numJob = 15, numHost = 1, alpha = 0.01;
 	if (taskType == 2) St = 500;
-	int minCore = 3, maxCore = 20; //number of cores
+	int minCore = 3, maxCore = 10; //number of cores
 	//int minCore = 3, maxCore = 20;
 	int minBlock = 20, maxBlock = 50; //number of blocks
 	int minSize = 50, maxSize = 200; //size of blocks
@@ -497,6 +497,7 @@ void ResourceScheduler::scheduleDeng() {
 	{
 		cout << "核" + to_string(i) + "的finish time" << hostCoreFinishTime[0][i] << endl;
 	}
+/****************************************************************************************************************************/
 
 	//根据将剩下的job分1个核 2个核 n个核运行时其结束时间早晚来判断是否分核
 
@@ -512,8 +513,8 @@ void ResourceScheduler::scheduleDeng() {
 		for (int j = 0; j < hostCore[0]; j++)
 		{
 			jobCoreTime[i][j] = jobSize[remainJob[i]] / ((Sc[remainJob[i]] * (1 - alpha * j)) * (j + 1));
-			//          cout<<"job总数:"<<jobSize[remainJob[i]]<<"job 速度"<<Sc[remainJob[i]]*(1-alpha*(j))<<endl;
-			 //         cout<<"job"+to_string(remainJob[i])+"使用"+to_string(j+1)+"个核时每个核所需平均时间"<<jobCoreTime[i][j]<<endl;
+		//	 cout<<"job总数:"<<jobSize[remainJob[i]]<<"job 速度"<<Sc[remainJob[i]]*(1-alpha*(j))<<endl;
+		//	 cout<<"job"+to_string(remainJob[i])+"使用"+to_string(j+1)+"个核时每个核所需平均时间"<<jobCoreTime[i][j]<<endl;
 		}
 
 		//找出每个job使用不同核时的最小完成时间记录在jobCoreFinishTime[i][j]中
@@ -546,11 +547,15 @@ void ResourceScheduler::scheduleDeng() {
 		cout << "Job" << remainJob[i] << "最小完成时间" << jobCoreMinFinishTime << "最小核数" << jobCoreMinFinishTimePos << endl;
 
 		vector<double> remainJobIBlockTime;      //根据预先确定的核数来计算block块的运行时间
+		//double tmp1 = 0;
 		remainJobIBlockTime.resize(jobBlock[remainJob[i]]);
 		for (int j = 0; j < jobBlock[remainJob[i]]; j++)
 		{
 			remainJobIBlockTime[j] = dataSize[remainJob[i]][j] / (Sc[remainJob[i]] * (1 - alpha * (jobCoreMinFinishTimePos - 1)));
+		//	cout << remainJobIBlockTime[j] << "  ";
+		//	tmp1 = tmp1 + remainJobIBlockTime[j];
 		}
+		//cout << tmp1 << endl;
 		//找到最小的前jobCoreMinFinishTimePos 的核所在位置后，将block按贪心算法分配其中
 		//构造优先级队列按finishiTime <finishTime,coreNumber>,其大小为jobMinFinishTimePos 大小 然后将Job块按从大到小放入其中coreNumber中
 
@@ -606,14 +611,14 @@ void ResourceScheduler::scheduleDeng() {
 		}
 	}
 
-	//for (int i = 0; i < hostCore[0]; i++)
-	//{
-	//	cout << "核" + to_string(i) + "的finish time" << hostCoreFinishTime[0][i] << endl;
-	//}
-	double maxFinshTime = 0;
-	for (size_t i = 0; i < hostCore[0]; i++)
+	for (int i = 0; i < hostCore[0]; i++)
 	{
-		maxFinshTime = max(maxFinshTime, hostCoreFinishTime[0][i]);
+		cout << "核" + to_string(i) + "的finish time" << hostCoreFinishTime[0][i] << endl;
 	}
-	cout << maxFinshTime/averageJobTime << endl;
+	//double maxFinshTime = 0;
+	//for (size_t i = 0; i < hostCore[0]; i++)
+	//{
+	//	maxFinshTime = max(maxFinshTime, hostCoreFinishTime[0][i]);
+	//}
+	//cout << maxFinshTime/averageJobTime << endl;
 }
