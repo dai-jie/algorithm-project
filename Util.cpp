@@ -1,4 +1,5 @@
-#include"Util.h"
+//#include"../hFiles/Util.h"
+#include"./Util.h"
 
 // Random generator
 // For testing, you can modify the range of the next parameters and get a new test case.
@@ -20,7 +21,7 @@ void generator(ResourceScheduler& rs, int taskType) {
 
 	cout << "numJob = " << rs.numJob << ", numHost = " << rs.numHost << ", alpha = " << rs.alpha;
 	if (taskType == 2) cout << ", St = " << rs.St;
-	cout<< "\n\n";
+	cout << "\n\n";
 
 	cout << "hostCore:\n";
 	for (int i = 0; i < rs.numHost; i++) {
@@ -83,11 +84,11 @@ void generator(ResourceScheduler& rs, int taskType) {
 
 void WriteData(string fileName, string text) // Save $text into file $fileName
 {
-//	ifstream ifs(fileName); // 读文件
-//	if (!ifs)
-//		cout << "Create file failed!" << endl;
-//	string content((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>())); // old file content
-//	ifs.close();
+	//	ifstream ifs(fileName); // 读文件
+	//	if (!ifs)
+	//		cout << "Create file failed!" << endl;
+	//	string content((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>())); // old file content
+	//	ifs.close();
 
 	ofstream fileStream;
 	fileStream.open(fileName.c_str(), ios::binary | ios::ate); //  插入到文件末尾
