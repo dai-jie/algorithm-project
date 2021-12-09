@@ -673,3 +673,25 @@ void ResourceScheduler::scheduleDeng() {
 	}
 	cout << maxFinshTime/averageJobTime << endl;
 }
+
+// give datasize, runloc,hostCoreTask rewrite these variables with core2hostTable core2coreTable
+void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
+{
+	vector<vector<tuple<int, int, int>>> runlocTemp;
+	runlocTemp.resize(databackup.numJob);
+	for (size_t i = 0; i < databackup.numJob; i++)
+	{
+		runlocTemp[i].resize(databackup.jobBlock[i]);
+	}
+	for (int i = 0; i < numJob; i++)
+	{
+		for (int j = 0; j < jobBlock[i]; j++)
+		{
+			auto &runloci = runLoc[i][j];
+			int coreid = std::get<1>(runloci);
+			int rankid = std::get<2>(runloci);
+			int hostid = core2hostTable[coreid];
+			int realcoreid = core2coreTable[coreid];
+		}
+	}
+}
