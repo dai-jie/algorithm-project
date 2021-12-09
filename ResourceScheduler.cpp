@@ -733,3 +733,115 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 
 
 }
+
+void ResourceScheduler::adjustTime()
+{
+	//存储每个job的开始block
+	vector<vector<int> > jobStartBlock;
+	jobStartBlock.resize(numJob);
+	
+	for (int i = 0; i < numHost; i++)
+	{
+		for (int corenum = 0; corenum < hostCore[i]; corenum++)
+		{
+			vector<int> firstFlag;
+			firstFlag.resize(numJob, 0);
+			for (int taskIdx = 0; taskIdx < hostCoreTask[i][corenum].size(); taskIdx++)
+			{
+				auto& hostCoreTaski = hostCoreTask[i][corenum][taskIdx];
+				int job = std::get<0>(hostCoreTaski);
+				int block = std::get<1>(hostCoreTaski);
+				if (firstFlag[job] == 0)
+				{
+					jobStartBlock[job].push_back(block);
+					firstFlag[job] = 1;
+				}
+			}
+		}
+	}
+
+	//给出job block，求出host core rank
+	//给出host core ，得出begin time
+
+	for (int jobi = 0; jobi < numJob; jobi++)
+	{
+		double max_begin = 0;
+		for (int i = 0; i < jobStartBlock.size(); i++)
+		{
+			int block = jobStartBlock[jobi][i];
+			auto &runLocE = runLoc[jobi][block];
+			int hostid = std::get<0>(runLocE);
+			int coreid = std::get<1>(runLocE);
+			int rank = std::get<2>(runLocE);
+			rank--;
+			auto& hostCoreTaskE = hostCoreTask[hostid][coreid][rank];
+			double begin_time = std::get<2>(runLocE);
+			max_begin = max(max_begin, begin_time);
+		}
+
+		for (auto &block : jobStartBlock[jobi])
+		{
+			auto& runLocE = runLoc[jobi][block];
+			int hostid = std::get<0>(runLocE);
+			int coreid = std::get<1>(runLocE);
+			int rank = std::get<2>(runLocE);
+			rank--;
+			auto& hostCoreTaskE = hostCoreTask[hostid][coreid][rank];
+			double begin_time = std::get<2>(runLocE);
+
+			if (begin_time < max_begin)
+			{
+				for (int i = rank; i < hostCoreTask[hostid][coreid].size(); i ++)
+				{
+					auto& hostCoreTaskE = hostCoreTask[hostid][coreid][i];
+					double& new_time = std::get<2>(hostCoreTaskE);
+					new_time += max_begin - begin_time;
+				}
+			}
+
+		}
+	}
+
+	for (auto &i : hostCoreTask)
+	{
+		for (auto& j : i)
+		{
+			for (auto& k :j)
+			{
+				double& end_time = std::get<3>(k);
+				int jobid = std::get<0>(k);
+				int blockid = std::get<1>(k);
+				end_time += blockPlusTrans[jobid][blockid];
+			}
+		}
+	}
+
+	//修改jobFinishTime
+	for (int jobi = 0; jobi < numJob; jobi++)
+	{
+		double max_finish = 0;
+		for (int blocki = 0; blocki < jobBlock[jobi]; blocki++)
+		{
+			auto& runLocE = runLoc[jobi][blocki];
+			int hostid = std::get<0>(runLocE);
+			int coreid = std::get<1>(runLocE);
+			int rank = std::get<2>(runLocE);
+			rank--;
+			auto& hostCoreTaskE = hostCoreTask[hostid][coreid][rank];
+			double finish_time = std::get<3>(hostCoreTaskE);
+			max_finish = max(max_finish, finish_time);
+		}
+		jobFinishTime[jobi] = max_finish;
+	}
+
+	//修改hostcoreFinishTime
+	for (int i = 0; i < numHost; i++)
+	{
+		for (int core = 0; core < hostCore[i]; core++)
+		{
+			auto& lastTask = hostCoreTask[i][core].back();
+			hostCoreFinishTime[i][core] = std::get<3>(lastTask);
+		}
+	}
+
+}

@@ -36,6 +36,8 @@ public:
 	vector<double> jobTime;                 //ÿ��job�������е���ʱ�� 2021++
 	vector<double> jobSize;               //ÿ��job�ܵĴ�С2021+++
 
+	vector<vector<int> > blockPlusTrans; //job number -> block number -> processtime+tranmissiontime;
+
 	vector<int> core2hostTable; // output the Host number of some core.
 	vector<int> core2coreTable;
 	ResourceScheduler(int, int, int);
@@ -48,7 +50,9 @@ public:
 	void scheduleDeng();
 
 	// output
+	
 	void resultFormator(ResourceScheduler& databackup);
+	void adjustTime();
 	void calculateBlockTime();
 	void outputSolutionFromBlock();
 	void outputSolutionFromCore();
