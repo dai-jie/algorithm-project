@@ -706,7 +706,7 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 	// 
 	// 计算hostCoreTask;
 
-	for()
+	
 	 
 	//计算jobFinishTime，
 	
