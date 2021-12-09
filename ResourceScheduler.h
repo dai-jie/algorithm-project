@@ -32,11 +32,17 @@ public:
 	vector<vector<double>> hostCoreFinishTime; // host->core->finishTime
 	vector<vector<vector<double>>> blockSch;
 
+	vector<double> jobTime;                 //每个job所需运行的总时间 2021++
+	vector<double> jobSize;               //每个job总的大小2021+++
+
 	ResourceScheduler(int, int);
 	void Initial();
+	// schedule algorithm
 	void schedule();
 	void scheduleTwoStep();
 	void scheduleTwoStep2();
+	void scheduleDeng();
+
 	void calculateBlockTime();
 	void outputSolutionFromBlock();
 	void outputSolutionFromCore();
