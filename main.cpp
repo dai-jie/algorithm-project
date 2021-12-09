@@ -5,9 +5,10 @@
 int main() {
 	int taskType = 1;
 	int caseID = 1;
-	ResourceScheduler rs(taskType, caseID, 1);
+	ResourceScheduler rs(taskType, caseID, 1); // 0 random; 1 file;
 	//generator(rs,taskType);
 	rs.Initial();
+	rs.scheduleDeng();
 	rs.scheduleTwoStep();
 	rs.scheduleTwoStep2();
 
