@@ -750,5 +750,4 @@ void ResourceScheduler::transferToHost0() {
 
 	hostCore[0] = allCoreNum;
 
-
 };
