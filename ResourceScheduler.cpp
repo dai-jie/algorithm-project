@@ -1,42 +1,74 @@
+ï»¿//#include "../hFiles/ResourceScheduler.h"
 #include "ResourceScheduler.h"
+#include <random>
 
-ResourceScheduler::ResourceScheduler(int tasktype,int caseID) {
+
+ResourceScheduler::ResourceScheduler(int tasktype, int caseID) {
 	taskType = tasktype;
-	string filePath = ".\\input\\task" + to_string(taskType) + "_case"+to_string(caseID)+".txt";
-	
-	if (freopen(filePath.c_str(), "r", stdin) == NULL)
-	{
-		cout << filePath << endl;
-	}
-	cin >> numJob >> numHost >> alpha;
-	if (taskType == 2)
-		cin >> St;
+	srand((int)time(0));
+	numJob = 10, numHost = 1, alpha = 0.01;
+	if (taskType == 2) St = 500;
+	int minCore = 3, maxCore = 20;
+	//int minCore = 3, maxCore = 20;
+	int minBlock = 20, maxBlock = 500;
+	int minSize = 50, maxSize = 200;
+	double minSpeed = 20, maxSpeed = 80;
 	hostCore.resize(numHost);
-	for (int i = 0; i < numHost; i++)
-		cin >> hostCore[i];
-
 	jobBlock.resize(numJob);
-	for (int i = 0; i < numJob; i++)
-		cin >> jobBlock[i];
-
 	Sc.resize(numJob);
-	for (int i = 0; i < numJob; i++)
-		cin >> Sc[i];
-
 	dataSize.resize(numJob);
-	for (int i = 0; i < numJob; i++) {
-		dataSize[i].resize(jobBlock[i]);
-		for (int j = 0; j < jobBlock[i]; j++)
-			cin >> dataSize[i][j];
+	location.resize(numJob);
+
+	cout << "\n\n-----------Generator starts.--------------\n\n";
+
+	cout << "numJob = " << numJob << ", numHost = " << numHost << ", alpha = " << alpha;
+	if (taskType == 2) cout << ", St = " << St;
+	cout << "\n\n";
+
+	cout << "hostCore:\n";
+	for (int i = 0; i < numHost; i++) {
+		do {
+			hostCore[i] = rand() % (maxCore - minCore + 1) + minCore;
+			//cout << hostCore[i] << endl;
+		} while (alpha >= 1.0 / (hostCore[i] - 1));
+
+		cout << hostCore[i] << " ";
 	}
 
-	
-
-	location.resize(numJob);
+	cout << "\n\njobBlockNumber:\n";
 	for (int i = 0; i < numJob; i++) {
+		jobBlock[i] = rand() % (maxBlock - minBlock + 1) + minBlock;
+		cout << jobBlock[i] << " ";
+	}
+
+	cout << "\n\njobCalculatingSpeed:\n";
+	for (int i = 0; i < numJob; i++)
+	{
+		Sc[i] = rand() % int(maxSpeed - minSpeed + 1) + minSpeed;
+		cout << Sc[i] << " ";
+	}
+
+	cout << "\n\nblockDataSize:\n";
+	for (int i = 0; i < numJob; i++)
+	{
+		dataSize[i].resize(jobBlock[i]);
+		for (int j = 0; j < jobBlock[i]; j++) {
+			dataSize[i][j] = rand() % (maxSize - minSize + 1) + minSize;
+			//dataSize[i][j] = fabs(std::normal_distribution<double> n(4, 1.5));
+			cout << dataSize[i][j] << " ";
+		}
+		cout << endl;
+	}
+
+	cout << "\njobBlockInitialLocation:\n";
+	for (int i = 0; i < numJob; i++)
+	{
 		location[i].resize(jobBlock[i]);
-		for (int j = 0; j < jobBlock[i]; j++)
-			cin >> location[i][j];
+		for (int j = 0; j < jobBlock[i]; j++) {
+			location[i][j] = rand() % numHost;
+			cout << location[i][j] << " ";
+		}
+		cout << endl;
 	}
 
 	jobFinishTime.resize(numJob, 0);
@@ -54,8 +86,82 @@ ResourceScheduler::ResourceScheduler(int tasktype,int caseID) {
 	for (int i = 0; i < numHost; i++)
 		hostCoreFinishTime[i].resize(hostCore[i], 0);
 
+	cout << "\n\n-----------Generator ends.--------------\n\n";
+}
 
-	
+void ResourceScheduler::Initial() {
+	blockTime.resize(numJob);
+	for (int i = 0; i < numJob; i++) {
+		blockTime[i].resize(hostCore[0]);
+		for (int j = 0; j < hostCore[0]; j++) {
+			blockTime[i][j].resize(jobBlock[i]);
+			for (int k = 0; k < jobBlock[i]; k++) {
+				blockTime[i][j][k] = dataSize[i][k] / (g(j + 1) * Sc[i]);
+			}
+		}
+
+	}
+
+	/*for (int i = 0; i < numJob; i++) {
+		;
+		for (int j = 0; j < hostCore[0]; j++) {
+
+			for (int k = 0; k < jobBlock[i]; k++) {
+				cout << blockTime[i][j][k] << " ";
+			}
+			cout << endl;
+		}
+
+	}*/
+
+	blockSch.resize(numJob);
+	for (int i = 0; i < numJob; i++)
+	{
+		blockSch[i].resize(hostCore[0]);
+		for (int j = 0; j < hostCore[0]; j++)
+		{
+			blockSch[i][j].resize(j + 1, 0);
+		}
+	}
+
+	for (int i = 0; i < numJob; i++)
+	{
+		for (int j = 0; j < hostCore[0]; j++)
+		{
+			int coreNum = j + 1;
+			priority_queue<double, vector<double>, greater<double> > timeQueue;
+			for (int k = 0; k < coreNum; k++) timeQueue.push(0.0);
+			sort(blockTime[i][j].begin(), blockTime[i][j].end(), greater<double>());
+			for (int k = 0; k < jobBlock[i]; k++)
+			{
+				double finishTime = timeQueue.top() + blockTime[i][j][k];
+				timeQueue.pop();
+				timeQueue.push(finishTime);
+			}
+			for (int k = 0; k < coreNum; k++)
+			{
+				blockSch[i][j][k] = timeQueue.top();
+				timeQueue.pop();
+			}
+
+		}
+	}
+
+	/*for (int i = 0; i < numJob; i++)
+	{
+		for (int j = 0; j < hostCore[0]; j++)
+		{
+			for (int k = 0; k < blockSch[i][j].size(); k++)
+			{
+				cout << blockSch[i][j][k] << " ";
+
+			}
+			cout << endl;
+
+		}
+	}*/
+
+
 }
 
 void ResourceScheduler::schedule() {
@@ -139,56 +245,23 @@ double ResourceScheduler::g(int e) {
 	return 1 - alpha * (e - 1);
 }
 
-void ResourceScheduler::JobSchInit()
-{
-	blockTime.resize(numJob);
+void ResourceScheduler::firstJobSchedule() {
+	vector<double> totalJobTime;
+	totalJobTime.resize(numJob);
 	for (int i = 0; i < numJob; i++) {
-		blockTime[i].resize(hostCore[0]);
-		for (int j = 0; j < hostCore[0]; j++) {
-			blockTime[i][j].resize(jobBlock[i]);
-			for (int k = 0; k < jobBlock[i]; k++) {
-				blockTime[i][j][k] = dataSize[i][k] / (g(j + 1) * Sc[i]);
-
-			}
-		}
-
-	}
-	blockSch.resize(numJob);
-	for (int i = 0; i < numJob; i++)
-	{
-		blockSch[i].resize(hostCore[0]);
-		for (int j = 0; j < hostCore[0]; j++)
-		{
-			blockSch[i][j].resize(j + 1, 0);
+		totalJobTime[i] = 0;
+		for (int j = 0; j < jobBlock[i]; j++) {
+			totalJobTime[i] += blockTime[i][0][j];
 		}
 	}
 
-	for (int i = 0; i < numJob; i++)
-	{
-		for (int j = 0; j < hostCore[0]; j++)
-		{
-			int coreNum = j + 1;
-			priority_queue<double, vector<double>, greater<double> > timeQueue;
-			for (int k = 0; k < coreNum; k++) timeQueue.push(0.0);
-			sort(blockTime[i][j].begin(), blockTime[i][j].end(), greater<double>());
-			for (int k = 0; k < jobBlock[i]; k++)
-			{
-				double finishTime = timeQueue.top() + blockTime[i][j][k];
-				timeQueue.pop();
-				timeQueue.push(finishTime);
-			}
-			for (int k = 0; k < coreNum; k++)
-			{
-				blockSch[i][j][k] = timeQueue.top();
-				timeQueue.pop();
-			}
+	sort(totalJobTime.begin(), totalJobTime.end(), less<double>());
 
-		}
-	}
+
 }
 
 void ResourceScheduler::scheduleTwoStep() {
-	priority_queue<pair<double, int>, vector<pair<double, int>>, less<pair<double, int> > > heapJob; //max-heap Job
+	priority_queue<pair<double, int>, vector<pair<double, int>>, less<pair<double, int> > > heapJob; //max-heap
 	priority_queue<double, vector<double>, greater<double> > heapFinish; //min-heap
 	for (int i = 0; i < hostCore[0]; i++) heapFinish.push(0.0);
 
@@ -199,6 +272,7 @@ void ResourceScheduler::scheduleTwoStep() {
 	}
 
 	finishLine /= double(hostCore[0]);
+	double perfectTime = finishLine;
 
 	int coreNum = 0;
 	while (coreNum < hostCore[0] && (!heapJob.empty()))
@@ -210,12 +284,7 @@ void ResourceScheduler::scheduleTwoStep() {
 			heapJob.pop();
 			vector<double> blockFinish;
 			vector<double> jobFinish;
-			for (int i = 0; i <= coreNum; i++) {
-				if (jobi.second >= blockSch.size()) cout << "error1" << endl;
-				if (coreNum >= blockSch[jobi.second].size()) cout << "e2" << endl;
-
-				blockFinish.push_back(blockSch[jobi.second][coreNum][i]);
-			}
+			for (int i = 0; i <= coreNum; i++) blockFinish.push_back(blockSch[jobi.second][coreNum][i]);
 			double maxFinish = 0;
 			for (int i = 0; i <= coreNum; i++)
 			{
@@ -230,26 +299,6 @@ void ResourceScheduler::scheduleTwoStep() {
 					jobFinish[i] = maxFinish + blockFinish[i];
 					heapFinish.push(jobFinish[i]);
 				}
-				cout << "job number : " << jobi.second << endl;
-				cout << "core Num: " << coreNum << endl;
-				cout << "block: " << endl;
-				for (int i = 0; i <= coreNum; i ++)
-					cout << blockSch[jobi.second][coreNum][i] << " ";
-				cout << endl;
-				vector<double> a123;
-				for (int i = 0; i < hostCore[0]; i++)
-				{
-					double t;
-					t = heapFinish.top();
-					a123.push_back(t);
-					cout <<   t << " ";
-					heapFinish.pop();
-				}
-				cout << endl;
-				for (int i = 0; i < hostCore[0]; i++)
-				{
-					heapFinish.push(a123[i]);
-				}
 			}
 			else
 			{
@@ -263,7 +312,7 @@ void ResourceScheduler::scheduleTwoStep() {
 
 		if (coreNum == hostCore[0] - 1 && (!heapJob.empty()))
 		{
-			//À©ÈÝ finishLine 
+			//Ã€Â©ÃˆÃ finishLine 
 			coreNum = 0;
 			double augLine = 0;
 			int heapJobTempSize = heapJobTemp.size();
@@ -272,7 +321,7 @@ void ResourceScheduler::scheduleTwoStep() {
 				augLine += heapJobTemp.top().first;
 				heapJobTemp.pop();
 			}
-			augLine /= double(hostCore[0]);
+			augLine /= double(heapJobTempSize);
 			finishLine += augLine;
 			//finishLine = augLine + heapFinish.top();
 		}
@@ -282,14 +331,19 @@ void ResourceScheduler::scheduleTwoStep() {
 		}
 	}
 
-	//cout << "All cores finish time: " << endl;
+	cout << "All cores finish time: " << endl;
+	double infactTime = 0;
 	while (!heapFinish.empty())
 	{
-
+		if (heapFinish.top() > infactTime) {
+			infactTime = heapFinish.top();
+		}
 		cout << heapFinish.top() << ' ';
 		heapFinish.pop();
 	}
 	cout << endl;
+
+	cout << "infactTime / perfectTime = " << infactTime / perfectTime << endl;
 }
 
 void ResourceScheduler::scheduleTwoStep2() {
@@ -304,6 +358,7 @@ void ResourceScheduler::scheduleTwoStep2() {
 	}
 
 	finishLine /= double(hostCore[0]);
+	double perfectTime = finishLine;
 
 	int coreNum = 0;
 	while ((!heapJob.empty()))
@@ -343,7 +398,7 @@ void ResourceScheduler::scheduleTwoStep2() {
 
 		if ((!heapJob.empty()))
 		{
-			//À©ÈÝ finishLine 
+			//Ã€Â©ÃˆÃ finishLine 
 			double augLine = 0;
 			int heapJobTempSize = heapJobTemp.size();
 			while (!heapJobTemp.empty())
@@ -362,11 +417,15 @@ void ResourceScheduler::scheduleTwoStep2() {
 	}
 
 	//cout << "All cores finish time: " << endl;
+	double infactTime = 0;
 	while (!heapFinish.empty())
 	{
-
+		if (heapFinish.top() > infactTime) {
+			infactTime = heapFinish.top();
+		}
 		cout << heapFinish.top() << ' ';
 		heapFinish.pop();
 	}
 	cout << endl;
+	cout << "infactTime / perfectTime = " << infactTime / perfectTime << endl;
 }
