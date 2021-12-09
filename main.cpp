@@ -8,8 +8,9 @@ int main() {
 	ResourceScheduler rs(taskType, caseID, 1);
 	//generator(rs,taskType);
 	rs.Initial();
-	rs.scheduleTwoStep();
-	rs.scheduleTwoStep2();
+	rs.scheduleDeng();
+	//rs.scheduleTwoStep();
+	//rs.scheduleTwoStep2();
 
 	//rs.schedule();
 	rs.outputSolutionFromBlock();
