@@ -1,73 +1,107 @@
 ﻿#include "ResourceScheduler.h"
 #include <random>
+#define RandomGenerate 0
+#define ReadFromFile 1
 
 using namespace std;
-ResourceScheduler::ResourceScheduler(int tasktype, int caseID) {
-	taskType = tasktype;
-	srand((int)time(0));
-	numJob = 10, numHost = 1, alpha = 0.01;
-	if (taskType == 2) St = 500;
-	int minCore = 3, maxCore = 20; //number of cores
-	//int minCore = 3, maxCore = 20;
-	int minBlock = 20, maxBlock = 50; //number of blocks
-	int minSize = 50, maxSize = 200; //size of blocks
-	double minSpeed = 20, maxSpeed = 80;
-	hostCore.resize(numHost);
-	jobBlock.resize(numJob);
-	Sc.resize(numJob);
-	dataSize.resize(numJob);
-	location.resize(numJob);
+ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype) {
+	if (generatetype == RandomGenerate) {
+		taskType = tasktype;
+		srand((int)time(0));
+		numJob = 10, numHost = 1, alpha = 0.01;
+		if (taskType == 2) St = 500;
+		int minCore = 3, maxCore = 10; //number of cores
+		//int minCore = 3, maxCore = 20;
+		int minBlock = 20, maxBlock = 50; //number of blocks
+		int minSize = 50, maxSize = 200; //size of blocks
+		double minSpeed = 20, maxSpeed = 80;
+		hostCore.resize(numHost);
+		jobBlock.resize(numJob);
+		Sc.resize(numJob);
+		dataSize.resize(numJob);
+		location.resize(numJob);
 
-	cout << "\n\n-----------Generator starts.--------------\n\n";
+		cout << "\n\n-----------Generator starts.--------------\n\n";
 
-	cout << "numJob = " << numJob << ", numHost = " << numHost << ", alpha = " << alpha;
-	if (taskType == 2) cout << ", St = " << St;
-	cout << "\n\n";
+		cout << "numJob = " << numJob << ", numHost = " << numHost << ", alpha = " << alpha;
+		if (taskType == 2) cout << ", St = " << St;
+		cout << "\n\n";
 
-	cout << "hostCore:\n";
-	for (int i = 0; i < numHost; i++) {
-		do {
-			hostCore[i] = rand() % (maxCore - minCore + 1) + minCore;
-			//cout << hostCore[i] << endl;
-		} while (alpha >= 1.0 / (hostCore[i] - 1));
+		cout << "hostCore:\n";
+		for (int i = 0; i < numHost; i++) {
+			do {
+				hostCore[i] = rand() % (maxCore - minCore + 1) + minCore;
+				//cout << hostCore[i] << endl;
+			} while (alpha >= 1.0 / (hostCore[i] - 1));
 
-		cout << hostCore[i] << " ";
-	}
-
-	cout << "\n\njobBlockNumber:\n";
-	for (int i = 0; i < numJob; i++) {
-		jobBlock[i] = rand() % (maxBlock - minBlock + 1) + minBlock;
-		cout << jobBlock[i] << " ";
-	}
-
-	cout << "\n\njobCalculatingSpeed:\n";
-	for (int i = 0; i < numJob; i++)
-	{
-		Sc[i] = rand() % int(maxSpeed - minSpeed + 1) + minSpeed;
-		cout << Sc[i] << " ";
-	}
-
-	cout << "\n\nblockDataSize:\n";
-	for (int i = 0; i < numJob; i++)
-	{
-		dataSize[i].resize(jobBlock[i]);
-		for (int j = 0; j < jobBlock[i]; j++) {
-			dataSize[i][j] = rand() % (maxSize - minSize + 1) + minSize;
-			//dataSize[i][j] = fabs(std::normal_distribution<double> n(4, 1.5));
-			std::cout << dataSize[i][j] << " ";
+			cout << hostCore[i] << " ";
 		}
-		cout << endl;
-	}
 
-	std::cout << "\njobBlockInitialLocation:\n";
-	for (int i = 0; i < numJob; i++)
-	{
-		location[i].resize(jobBlock[i]);
-		for (int j = 0; j < jobBlock[i]; j++) {
-			location[i][j] = rand() % numHost;
-			cout << location[i][j] << " ";
+		cout << "\n\njobBlockNumber:\n";
+		for (int i = 0; i < numJob; i++) {
+			jobBlock[i] = rand() % (maxBlock - minBlock + 1) + minBlock;
+			cout << jobBlock[i] << " ";
 		}
-		cout << endl;
+
+		cout << "\n\njobCalculatingSpeed:\n";
+		for (int i = 0; i < numJob; i++)
+		{
+			Sc[i] = rand() % int(maxSpeed - minSpeed + 1) + minSpeed;
+			cout << Sc[i] << " ";
+		}
+
+		cout << "\n\nblockDataSize:\n";
+		for (int i = 0; i < numJob; i++)
+		{
+			dataSize[i].resize(jobBlock[i]);
+			for (int j = 0; j < jobBlock[i]; j++) {
+				dataSize[i][j] = rand() % (maxSize - minSize + 1) + minSize;
+				//dataSize[i][j] = fabs(std::normal_distribution<double> n(4, 1.5));
+				std::cout << dataSize[i][j] << " ";
+			}
+			cout << endl;
+		}
+
+		std::cout << "\njobBlockInitialLocation:\n";
+		for (int i = 0; i < numJob; i++)
+		{
+			location[i].resize(jobBlock[i]);
+			for (int j = 0; j < jobBlock[i]; j++) {
+				location[i][j] = rand() % numHost;
+				cout << location[i][j] << " ";
+			}
+			cout << endl;
+		}
+	}
+	else if (generatetype == ReadFromFile) {
+		taskType = tasktype;
+		string filePath = "D:\\cpp_workpalce\\algorithm_work\\task" + to_string(taskType) + "_case" + to_string(caseID) + ".txt";
+		//	string buffer = getcwd(NULL, 0);
+		//	cout << buffer;
+
+		if (freopen(filePath.c_str(), "r", stdin) == NULL)
+			cout << filePath;
+		cin >> numJob >> numHost >> alpha;
+		if (taskType == 2)
+			cin >> St;
+		hostCore.resize(numHost);
+		for (int i = 0; i < numHost; i++)
+			cin >> hostCore[i];
+
+		jobBlock.resize(numJob);
+		for (int i = 0; i < numJob; i++)
+			cin >> jobBlock[i];
+
+		Sc.resize(numJob);
+		for (int i = 0; i < numJob; i++)
+			cin >> Sc[i];
+
+		dataSize.resize(numJob);
+		for (int i = 0; i < numJob; i++) {
+			dataSize[i].resize(jobBlock[i]);
+			for (int j = 0; j < jobBlock[i]; j++)
+				cin >> dataSize[i][j];
+		}
 	}
 
 	jobFinishTime.resize(numJob, 0);

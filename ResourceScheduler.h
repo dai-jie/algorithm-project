@@ -32,7 +32,7 @@ public:
 	vector<vector<double>> hostCoreFinishTime; // host->core->finishTime
 	vector<vector<vector<double>>> blockSch;
 
-	ResourceScheduler(int, int);
+	ResourceScheduler(int, int, int);
 	void Initial();
 	void schedule();
 	void scheduleTwoStep();
