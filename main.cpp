@@ -5,7 +5,7 @@
 int main() {
 	int taskType = 1;
 	int caseID = 1;
-	ResourceScheduler rs(taskType, caseID);
+	ResourceScheduler rs(taskType, caseID, 1);
 	//generator(rs,taskType);
 	rs.Initial();
 	rs.scheduleTwoStep();
