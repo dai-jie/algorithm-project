@@ -1,17 +1,16 @@
-﻿//#include "../hFiles/ResourceScheduler.h"
-#include "ResourceScheduler.h"
+﻿#include "ResourceScheduler.h"
 #include <random>
 
-
+using namespace std;
 ResourceScheduler::ResourceScheduler(int tasktype, int caseID) {
 	taskType = tasktype;
 	srand((int)time(0));
 	numJob = 10, numHost = 1, alpha = 0.01;
 	if (taskType == 2) St = 500;
-	int minCore = 3, maxCore = 20;
+	int minCore = 3, maxCore = 20; //number of cores
 	//int minCore = 3, maxCore = 20;
-	int minBlock = 20, maxBlock = 500;
-	int minSize = 50, maxSize = 200;
+	int minBlock = 20, maxBlock = 50; //number of blocks
+	int minSize = 50, maxSize = 200; //size of blocks
 	double minSpeed = 20, maxSpeed = 80;
 	hostCore.resize(numHost);
 	jobBlock.resize(numJob);
@@ -55,12 +54,12 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID) {
 		for (int j = 0; j < jobBlock[i]; j++) {
 			dataSize[i][j] = rand() % (maxSize - minSize + 1) + minSize;
 			//dataSize[i][j] = fabs(std::normal_distribution<double> n(4, 1.5));
-			cout << dataSize[i][j] << " ";
+			std::cout << dataSize[i][j] << " ";
 		}
 		cout << endl;
 	}
 
-	cout << "\njobBlockInitialLocation:\n";
+	std::cout << "\njobBlockInitialLocation:\n";
 	for (int i = 0; i < numJob; i++)
 	{
 		location[i].resize(jobBlock[i]);
@@ -165,7 +164,6 @@ void ResourceScheduler::Initial() {
 }
 
 void ResourceScheduler::schedule() {
-
 	vector<vector<int>> hostCoreBlock(numHost);
 	for (int i = 0; i < numHost; i++)
 		hostCoreBlock[i].resize(hostCore[i], 0);
@@ -245,20 +243,7 @@ double ResourceScheduler::g(int e) {
 	return 1 - alpha * (e - 1);
 }
 
-void ResourceScheduler::firstJobSchedule() {
-	vector<double> totalJobTime;
-	totalJobTime.resize(numJob);
-	for (int i = 0; i < numJob; i++) {
-		totalJobTime[i] = 0;
-		for (int j = 0; j < jobBlock[i]; j++) {
-			totalJobTime[i] += blockTime[i][0][j];
-		}
-	}
 
-	sort(totalJobTime.begin(), totalJobTime.end(), less<double>());
-
-
-}
 
 void ResourceScheduler::scheduleTwoStep() {
 	priority_queue<pair<double, int>, vector<pair<double, int>>, less<pair<double, int> > > heapJob; //max-heap
@@ -312,7 +297,7 @@ void ResourceScheduler::scheduleTwoStep() {
 
 		if (coreNum == hostCore[0] - 1 && (!heapJob.empty()))
 		{
-			//À©ÈÝ finishLine 
+			//扩容 finishLine 
 			coreNum = 0;
 			double augLine = 0;
 			int heapJobTempSize = heapJobTemp.size();
@@ -398,7 +383,7 @@ void ResourceScheduler::scheduleTwoStep2() {
 
 		if ((!heapJob.empty()))
 		{
-			//À©ÈÝ finishLine 
+			//扩容 finishLine 
 			double augLine = 0;
 			int heapJobTempSize = heapJobTemp.size();
 			while (!heapJobTemp.empty())

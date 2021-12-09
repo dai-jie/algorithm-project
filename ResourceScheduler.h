@@ -38,7 +38,6 @@ public:
 	void scheduleTwoStep();
 	void scheduleTwoStep2();
 	void calculateBlockTime();
-	void firstJobSchedule(); //first step: schedule job with the limit of sum of blockTime / coreNum #
 	void outputSolutionFromBlock();
 	void outputSolutionFromCore();
 	void visualization(); // An optional fuction.
