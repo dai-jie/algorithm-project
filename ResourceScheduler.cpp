@@ -673,3 +673,58 @@ void ResourceScheduler::scheduleDeng() {
 	}
 	cout << maxFinshTime/averageJobTime << endl;
 }
+
+// give datasize, runloc,hostCoreTask rewrite these variables with core2hostTable core2coreTable
+void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
+{
+	// task2's runLoc
+	vector<vector<tuple<int, int, int>>> runlocTemp;
+	vector<vector<double>> hostCoreFinishTimeTemp;
+
+	runlocTemp.resize(databackup.numJob);
+	for (size_t i = 0; i < databackup.numJob; i++)
+	{
+		runlocTemp[i].resize(databackup.jobBlock[i]);
+	}
+	for (int i = 0; i < numJob; i++)
+	{
+		for (int j = 0; j < jobBlock[i]; j++)
+		{
+			auto &runloci = runLoc[i][j];
+			int coreid = std::get<1>(runloci);
+			int rankid = std::get<2>(runloci);
+			int hostid = core2hostTable[coreid];
+			int realcoreid = core2coreTable[coreid];
+			runlocTemp[i][j] = std::make_tuple(hostid, realcoreid, rankid);
+			
+			std::make_tuple(i, j, 0.0, 0.0);
+		}
+	}
+	//调整blockTime
+	// 
+	//
+	// 
+	// 计算hostCoreTask;
+
+	for()
+	 
+	//计算jobFinishTime，
+	
+	//计算hostcoreFinishTimeTemp
+	for (int i = 0; i < hostCore[0]; i++)
+	{
+		int coreid = i;
+		int hostid = core2hostTable[coreid];
+		int realcoreid = core2coreTable[coreid];
+		hostCoreFinishTimeTemp[hostid][realcoreid] = hostCoreFinishTime[0][i];
+	}
+
+
+	
+
+
+
+
+
+
+}
