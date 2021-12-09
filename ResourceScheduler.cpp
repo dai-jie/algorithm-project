@@ -696,8 +696,6 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 			int hostid = core2hostTable[coreid];
 			int realcoreid = core2coreTable[coreid];
 			runlocTemp[i][j] = std::make_tuple(hostid, realcoreid, rankid);
-			
-			std::make_tuple(i, j, 0.0, 0.0);
 		}
 	}
 	//调整blockTime
@@ -706,7 +704,7 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 	// 
 	// 计算hostCoreTask;
 
-	for()
+	
 	 
 	//计算jobFinishTime，
 	
