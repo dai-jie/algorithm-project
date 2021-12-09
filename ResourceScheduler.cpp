@@ -680,6 +680,7 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 	// task2's runLoc
 	vector<vector<tuple<int, int, int>>> runlocTemp;
 	vector<vector<double>> hostCoreFinishTimeTemp;
+	vector<vector<vector<tuple<int, int, double, double>>>> hostCoreTaskTemp;
 
 	runlocTemp.resize(databackup.numJob);
 	for (size_t i = 0; i < databackup.numJob; i++)
@@ -704,11 +705,17 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 	// 
 	// 计算hostCoreTask;
 
+
 	
 	 
-	//计算jobFinishTime，
-	
+	//计算jobFinishTime
+	// 
 	//计算hostcoreFinishTimeTemp
+	hostCoreFinishTimeTemp.resize(numHost);
+	for (int i = 0; i < numHost; i++)
+	{
+		hostCoreFinishTimeTemp[i].resize(databackup.hostCore[i]);
+	}
 	for (int i = 0; i < hostCore[0]; i++)
 	{
 		int coreid = i;
