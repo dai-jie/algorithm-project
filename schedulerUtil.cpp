@@ -110,7 +110,7 @@ void ResourceScheduler::transferToHost0() {
 }
 
 // give datasize, runloc,hostCoreTask rewrite these variables with core2hostTable core2coreTable
-void ResourceScheduler::resultFormator(ResourceScheduler& databackup)
+void ResourceScheduler::resolveFromHost0(ResourceScheduler& databackup)
 {
 	// task2's runLoc
 	vector<vector<tuple<int, int, int>>> runlocTemp;
@@ -129,8 +129,8 @@ void ResourceScheduler::resultFormator(ResourceScheduler& databackup)
 			auto& runloci = runLoc[i][j];
 			int coreid = std::get<1>(runloci);
 			int rankid = std::get<2>(runloci);
-			int hostid = core2hostTable[coreid];
-			int realcoreid = core2coreTable[coreid];
+			int hostid = core2hostcore[coreid].first;
+			int realcoreid = core2hostcore[coreid].second;
 			runlocTemp[i][j] = std::make_tuple(hostid, realcoreid, rankid);
 		}
 	}
@@ -151,8 +151,8 @@ void ResourceScheduler::resultFormator(ResourceScheduler& databackup)
 	for (int i = 0; i < hostCore[0]; i++)
 	{
 		int coreid = i;
-		int hostid = core2hostTable[coreid];
-		int realcoreid = core2coreTable[coreid];
+		int hostid = core2hostcore[coreid].first;
+		int realcoreid = core2hostcore[coreid].second;
 		hostCoreFinishTimeTemp[hostid][realcoreid] = hostCoreFinishTime[0][i];
 	}
 
@@ -194,7 +194,6 @@ void ResourceScheduler::adjustTime()
 
 	//给出job block，求出host core rank
 	//给出host core ，得出begin time
-
 	for (int jobi = 0; jobi < numJob; jobi++)
 	{
 		double max_begin = 0;
@@ -230,7 +229,6 @@ void ResourceScheduler::adjustTime()
 					new_time += max_begin - begin_time;
 				}
 			}
-
 		}
 	}
 
@@ -275,4 +273,9 @@ void ResourceScheduler::adjustTime()
 			hostCoreFinishTime[i][core] = std::get<3>(lastTask);
 		}
 	}
+}
+
+void ResourceScheduler::calculateBlockPTrans()
+{
+	//vector<vector<double> > blockPlusTrans; 未初始化。
 }

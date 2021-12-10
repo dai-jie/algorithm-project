@@ -33,37 +33,28 @@ public:
 	vector<vector<vector<tuple<int, int, double, double>>>> hostCoreTask; // Core perspective: host->core->task-> <job,block,startTime,endTime>
 	vector<vector<double>> hostCoreFinishTime; // host->core->finishTime
 	vector<vector<vector<double>>> blockSch;
-	vector<pair<int, int>> core2hostcore;
-
-
-	vector<double> jobTime;                 //ÿ��job�������е���ʱ�� 2021++
-	vector<double> jobSize;               //ÿ��job�ܵĴ�С2021+++
-
-	vector<vector<int> > blockPlusTrans; //job number -> block number -> processtime+tranmissiontime;
-
-	vector<int> core2hostTable; // output the Host number of some core.
-	vector<int> core2coreTable;
+	
+	//construct func
 	ResourceScheduler(int, int, int);
 
-	void Initial();
 	// schedule algorithm
+	vector<double> jobTime;                 //Need initial
+	vector<double> jobSize;               //Need initial
 	void schedule();
 	void scheduleTwoStep();
 	void scheduleTwoStep2();
-
 	void scheduleDeng();
 	
-
-
+	//sche util
+	vector<vector<double> > blockPlusTrans; //job number -> block number -> tranmissiontime + processTime;
+	vector<pair<int, int>> core2hostcore;
 	void transferToHost0();
-
-
+	void Initial();
+	void resolveFromHost0(ResourceScheduler& databackup);
+	void adjustTime();
+	void calculateBlockPTrans();
 
 	// output
-	
-	void resultFormator(ResourceScheduler& databackup);
-	void adjustTime();
-	void calculateBlockTime();
 	void outputSolutionFromBlock();
 	void outputSolutionFromCore();
 	void visualization(); // An optional fuction.
