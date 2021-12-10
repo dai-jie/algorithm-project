@@ -31,6 +31,7 @@ public:
 	vector<vector<vector<tuple<int, int, double, double>>>> hostCoreTask; // Core perspective: host->core->task-> <job,block,startTime,endTime>
 	vector<vector<double>> hostCoreFinishTime; // host->core->finishTime
 	vector<vector<vector<double>>> blockSch;
+	vector<pair<int, int>> core2hostcore;
 
 
 	vector<double> jobTime;                 //ÿ��job�������е���ʱ�� 2021++
@@ -47,7 +48,14 @@ public:
 	void schedule();
 	void scheduleTwoStep();
 	void scheduleTwoStep2();
+
 	void scheduleDeng();
+	
+
+
+	void transferToHost0();
+
+
 
 	// output
 	

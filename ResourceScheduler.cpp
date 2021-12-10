@@ -474,6 +474,25 @@ void ResourceScheduler::scheduleTwoStep2() {
 }
 
 
+void ResourceScheduler::scheduleDeng() {
+	
+}
+
+void ResourceScheduler::transferToHost0() {
+	int allCoreNum = 0;
+	for (int i = 0; i < numHost; i++) {
+		allCoreNum += hostCore[i];
+	}
+	core2hostcore.resize(allCoreNum);
+	for (int i = 0, index = 0; i < numHost; i++) {
+		for (int j = 0; j < hostCore[i]; j++) {
+			core2hostcore[index].first = i;
+			core2hostcore[index].second = j;
+    }
+  }
+  hostCore[0] = allCoreNum;
+}
+
 // give datasize, runloc,hostCoreTask rewrite these variables with core2hostTable core2coreTable
 void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 {
@@ -505,9 +524,6 @@ void ResourceScheduler::resultFormator(ResourceScheduler & databackup)
 	// 
 	// 计算hostCoreTask;
 
-
-	
-	 
 	//计算jobFinishTime
 	// 
 	//计算hostcoreFinishTimeTemp
@@ -643,5 +659,4 @@ void ResourceScheduler::adjustTime()
 			hostCoreFinishTime[i][core] = std::get<3>(lastTask);
 		}
 	}
-
 }
