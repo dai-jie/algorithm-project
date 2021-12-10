@@ -142,6 +142,8 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ResourceScheduler.cpp" />
+    <ClCompile Include="schedulerAlgorithm.cpp" />
+    <ClCompile Include="schedulerUtil.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>

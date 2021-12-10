@@ -3,12 +3,12 @@
 #include "./Util.h"
 
 int main() {
-	int taskType = 1;
+	int taskType = 2;
 	int caseID = 1;
 	ResourceScheduler rs(taskType, caseID, 1); // 0 random; 1 file;
+	rs.Initial();
 	//generator(rs,taskType);
 	if (taskType == 1) {
-		rs.Initial();
 		rs.scheduleDeng();
 		rs.scheduleTwoStep();
 		rs.scheduleTwoStep2();
@@ -16,6 +16,7 @@ int main() {
 	else if (taskType == 2) {
 		ResourceScheduler origin = rs;
 		rs.transferToHost0();
+		rs.scheduleDeng();
 
 	}
 	

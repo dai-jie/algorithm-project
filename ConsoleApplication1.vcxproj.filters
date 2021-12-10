@@ -24,6 +24,12 @@
     <ClCompile Include="Util.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="schedulerAlgorithm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="schedulerUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ResourceScheduler.h">

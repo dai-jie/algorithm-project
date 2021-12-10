@@ -8,6 +8,8 @@
 #include<set>
 #include <sstream>
 #include <queue>
+#include <random>
+#include<utility>
 using namespace std;
 
 class ResourceScheduler {
