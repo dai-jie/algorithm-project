@@ -170,6 +170,19 @@ void ResourceScheduler::scheduleTwoStep2() {
 }
 
 void ResourceScheduler::scheduleDeng() {
+    cout << "=====================" << endl;
+    for (int i = 0; i < jobSize.size(); i++)
+    {
+        cout << jobSize[i] << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < jobTime.size(); i++)
+    {
+        cout << jobTime[i] << " ";
+    }
+    cout << endl;
+
+    cout << "=====================" << endl;
     double averageJobTime;
     double totalJobTime = 0;
     for (int i = 0; i < numJob; i++)
@@ -240,16 +253,16 @@ void ResourceScheduler::scheduleDeng() {
         jobFlag[currentLongestJobPos] = 1;
     }
 
-    //   cout<<"未放入的工作数"<<remainJob.size()<<endl;
-    //   for(int i=0;i<remainJob.size();i++)
-    //   {
-    //       cout<<"job号"<<remainJob[i]<<"工作时长"<<jobTime[remainJob[i]]<<endl;
-    //   }
+       cout<<"未放入的工作数"<<remainJob.size()<<endl;
+       for(int i=0;i<remainJob.size();i++)
+       {
+          cout<<"job号"<<remainJob[i]<<"工作时长"<<jobTime[remainJob[i]]<<endl;
+      }
 
-   //    for(int i=0;i<hostCore[0];i++)
-   //    {
-    //       cout<<"核"+to_string(i)+"的finish time"<<hostCoreFinishTime[0][i]<<endl;
-    //   }
+       for(int i=0;i<hostCore[0];i++)
+       {
+           cout<<"核"+to_string(i)+"的finish time"<<hostCoreFinishTime[0][i]<<endl;
+       }
    /*
        for(int j=0;j<hostCore[0];j++)
        {
@@ -271,16 +284,16 @@ void ResourceScheduler::scheduleDeng() {
  //   for(int i=remainJob.size()-1;i>=0;i--)
     {
         jobCoreTime[i].resize(hostCore[0]);  //j=0,1,2,3...分别代表1，2，3，4个核
-        for (int j = 0; j < hostCore[0]; j++)
+        for (int j = 0; j < hostCore[0]&&j<jobBlock[remainJob[i]]; j++)
         {
             jobCoreTime[i][j] = jobSize[remainJob[i]] / ((Sc[remainJob[i]] * (1 - alpha * j)) * (j + 1));
-            //       cout<<"job总数:"<<jobSize[remainJob[i]]<<"job 速度"<<Sc[remainJob[i]]*(1-alpha*(j))<<endl;
-            //       cout<<"job"+to_string(remainJob[i])+"使用"+to_string(j+1)+"个核时每个核所需平均时间"<<jobCoreTime[i][j]<<endl;
+                   cout<<"job总数:"<<jobSize[remainJob[i]]<<"job 速度"<<Sc[remainJob[i]]*(1-alpha*(j))<<endl;
+                   cout<<"job"+to_string(remainJob[i])+"使用"+to_string(j+1)+"个核时每个核所需平均时间"<<jobCoreTime[i][j]<<endl;
         }
 
         //找出每个job使用不同核时的最小完成时间记录在jobCoreFinishTime[i][j]中
-        jobCoreFinishTime[i].resize(hostCore[0]);
-        for (int j = 0; j < hostCore[0]; j++)              //核数
+        jobCoreFinishTime[i].resize(hostCore[0],10000);
+        for (int j = 0; j < hostCore[0] && j < jobBlock[remainJob[i]]; j++)              //核数
         {
             //将完成时间按从小到大 放入优先队列；
             for (int i = 0; i < hostCore[0]; i++)
@@ -313,9 +326,9 @@ void ResourceScheduler::scheduleDeng() {
                 jthCoreFinishTime = tmpHostCoreFinishTime.top();
             }
 
-            //       cout<<"第"<<j+1<<"小的核完成时间是"<<jthCoreFinishTime<<endl;
+                   cout<<"第"<<j+1<<"小的核完成时间是"<<jthCoreFinishTime<<endl;
             jobCoreFinishTime[i][j] = jobCoreTime[i][j] + jthCoreFinishTime;
-            //       cout<<"job"<<remainJob[i]<<"使用"<<j+1<<"个核时的最小完成时间"<<jobCoreFinishTime[i][j]<<endl;
+                   cout<<"job"<<remainJob[i]<<"使用"<<j+1<<"个核时的最小完成时间"<<jobCoreFinishTime[i][j]<<endl;
 
             while (!tmpHostCoreFinishTime.empty())
                 tmpHostCoreFinishTime.pop();
@@ -323,7 +336,7 @@ void ResourceScheduler::scheduleDeng() {
 
         double jobCoreMinFinishTime = *min_element(jobCoreFinishTime[i].begin(), jobCoreFinishTime[i].end()); //找到最小的完成时间
         int jobCoreMinFinishTimePos = min_element(jobCoreFinishTime[i].begin(), jobCoreFinishTime[i].end()) - jobCoreFinishTime[i].begin() + 1; //找出最小的使用核数
-     //   cout<<"Job"<<remainJob[i]<<"最小完成时间"<<jobCoreMinFinishTime<<"最小核数"<<jobCoreMinFinishTimePos<<"起始核完成时间"<< sortCoreFinishTime[jobCoreMinFinishTimePos-1]<<endl;
+        cout<<"Job"<<remainJob[i]<<"最小完成时间"<<jobCoreMinFinishTime<<"最小核数"<<jobCoreMinFinishTimePos<<"起始核完成时间"<< sortCoreFinishTime[jobCoreMinFinishTimePos-1]<<endl;
 
         jobCore[remainJob[i]] = jobCoreMinFinishTimePos;   //更新job最小核数
 

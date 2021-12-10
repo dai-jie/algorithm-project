@@ -72,6 +72,7 @@ void ResourceScheduler::Initial() {
 	}*/
 	jobSize.resize(numJob, 0);                  //2021++
 	jobTime.resize(numJob, 0);
+	
 
 	for (int i = 0; i < numJob; i++)
 	{

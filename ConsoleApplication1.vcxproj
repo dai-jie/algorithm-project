@@ -153,6 +153,7 @@
   <ItemGroup>
     <Text Include="input\task1_case1.txt" />
     <Text Include="input\task2_case1.txt" />
+    <Text Include="input\task2_case2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
