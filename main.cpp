@@ -26,7 +26,7 @@ int main() {
 	//rs.schedule();
 	rs.outputSolutionFromBlock();
 	rs.outputSolutionFromCore();
-	//rs.scheduleDeng();
+	//rs.printhostCoreTask();
 
 	return 0;
 }

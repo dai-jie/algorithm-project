@@ -170,8 +170,9 @@ void ResourceScheduler::resolveFromHost0(ResourceScheduler& databackup)
 				auto& taske = hostCoreTask[i][j][taski];
 				int jobid = std::get<0>(taske);
 				int blockid = std::get<1>(taske);
-				std::get<2>(taske) = std::get<2>(taske) + begin_time;
-				std::get<3>(taske) = std::get<2>(taske) + blockPlusTrans[jobid][blockid];
+				double taskeBeginTime = std::get<2>(taske);
+				std::get<2>(taske) = begin_time;
+				std::get<3>(taske) = begin_time + blockPlusTrans[jobid][blockid];
 				begin_time = std::get<3>(taske);
 			}
 			hostCoreFinishTimeTemp[i].push_back(begin_time);
@@ -220,7 +221,7 @@ void ResourceScheduler::adjustTime()
 			int rank = std::get<2>(runLocE);
 			rank--;
 			auto& hostCoreTaskE = hostCoreTask[hostid][coreid][rank];
-			double begin_time = std::get<2>(runLocE);
+			double begin_time = std::get<2>(hostCoreTaskE);
 			max_begin = max(max_begin, begin_time);
 		}
 
@@ -232,7 +233,7 @@ void ResourceScheduler::adjustTime()
 			int rank = std::get<2>(runLocE);
 			rank--;
 			auto& hostCoreTaskE = hostCoreTask[hostid][coreid][rank];
-			double begin_time = std::get<2>(runLocE);
+			double begin_time = std::get<2>(hostCoreTaskE);
 
 			if (begin_time < max_begin)
 			{
@@ -240,25 +241,27 @@ void ResourceScheduler::adjustTime()
 				{
 					auto& hostCoreTaskE = hostCoreTask[hostid][coreid][i];
 					double& new_time = std::get<2>(hostCoreTaskE);
+					double& end_time = std::get<3>(hostCoreTaskE);
 					new_time += max_begin - begin_time;
+					end_time = new_time + blockPlusTrans[std::get<0>(hostCoreTaskE)][std::get<1>(hostCoreTaskE)];
 				}
 			}
 		}
 	}
 
-	for (auto& i : hostCoreTask)
-	{
-		for (auto& j : i)
-		{
-			for (auto& k : j)
-			{
-				double& end_time = std::get<3>(k);
-				int jobid = std::get<0>(k);
-				int blockid = std::get<1>(k);
-				end_time += blockPlusTrans[jobid][blockid];
-			}
-		}
-	}
+	//for (auto& i : hostCoreTask)
+	//{
+	//	for (auto& j : i)
+	//	{
+	//		for (auto& k : j)
+	//		{
+	//			double& end_time = std::get<3>(k);
+	//			int jobid = std::get<0>(k);
+	//			int blockid = std::get<1>(k);
+	//			end_time = blockPlusTrans[jobid][blockid];
+	//		}
+	//	}
+	//}
 
 	//ÐÞ¸ÄjobFinishTime
 	for (int jobi = 0; jobi < numJob; jobi++)
@@ -307,4 +310,27 @@ void ResourceScheduler::calculateBlockPTrans()
 		}
 	}
 
+}
+
+void ResourceScheduler::printhostCoreTask()
+{
+	for (int i = 0; i < hostCoreTask.size(); i++)
+	{
+		cout << "Host " << i << ":" << endl;
+		for (int j = 0; j < hostCoreTask[i].size(); j++)
+		{
+			cout << "\t" << "Core " << j << ";";
+			for (auto& hostCoreTaskE : hostCoreTask[i][j])
+			{
+				int jobi = std::get<0>(hostCoreTaskE);
+				int blocki = std::get<1>(hostCoreTaskE);
+				double begint = std::get<2>(hostCoreTaskE);
+				double endt = std::get<3>(hostCoreTaskE);
+				printf("\t\t(Job%d, Block%d, %.3f, %.3f)\n", jobi, blocki, begint, endt);
+
+			}
+			cout << endl;
+		}
+		cout << endl << endl;
+	}
 }

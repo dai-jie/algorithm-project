@@ -292,7 +292,7 @@ void ResourceScheduler::scheduleDeng() {
         }
 
         //找出每个job使用不同核时的最小完成时间记录在jobCoreFinishTime[i][j]中
-        jobCoreFinishTime[i].resize(hostCore[0],10000);
+        jobCoreFinishTime[i].resize(hostCore[0],1e9);
         for (int j = 0; j < hostCore[0] && j < jobBlock[remainJob[i]]; j++)              //核数
         {
             //将完成时间按从小到大 放入优先队列；

@@ -53,6 +53,7 @@ public:
 	void resolveFromHost0(ResourceScheduler& databackup);
 	void adjustTime();
 	void calculateBlockPTrans();
+	void printhostCoreTask();
 
 	// output
 	void outputSolutionFromBlock();
