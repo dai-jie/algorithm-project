@@ -289,5 +289,20 @@ void ResourceScheduler::adjustTime()
 
 void ResourceScheduler::calculateBlockPTrans()
 {
-	//vector<vector<double> > blockPlusTrans; 未初始化。
+	//vector<vector<double> > blockPlusTrans; 未初始化
+	blockPlusTrans.resize(numJob);
+	for (int i = 0; i < numJob; i++) {
+		blockPlusTrans[i].resize(jobBlock[i]);
+		for (int j = 0; j < jobBlock[i]; j++) {
+			auto indexi = std::get<0>(runLoc[i][j]);
+			auto indexj = std::get<1>(runLoc[i][j]);
+			auto indexk = std::get<2>(runLoc[i][j]) - 1;
+			blockPlusTrans[i][j] = std::get<3>(hostCoreTask[indexi][indexj][indexk])
+				- std::get<2>(hostCoreTask[indexi][indexj][indexk]);
+			if (std::get<0>(runLoc[i][j]) != location[i][j]) {//schedule一次后，如果在与分配的host不一样的host上运行，则需要transmission
+				blockPlusTrans[i][j] += dataSize[i][j] / St;
+			}
+		}
+	}
+
 }
