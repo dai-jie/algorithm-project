@@ -134,36 +134,48 @@ void ResourceScheduler::resolveFromHost0(ResourceScheduler& databackup)
 			runlocTemp[i][j] = std::make_tuple(hostid, realcoreid, rankid);
 		}
 	}
-	//调整blockTime
-	// 
-	//
-	// 
-	// 计算hostCoreTask;
 
-	//计算jobFinishTime
-	// 
-	//计算hostcoreFinishTimeTemp
-	hostCoreFinishTimeTemp.resize(numHost);
+	// 修改hostCoreTask的id;
+	hostCore = databackup.hostCore;
+	hostCoreTaskTemp.resize(numHost);
 	for (int i = 0; i < numHost; i++)
 	{
-		hostCoreFinishTimeTemp[i].resize(databackup.hostCore[i]);
+		hostCoreTaskTemp[i].resize(databackup.hostCore[i]);
 	}
-	for (int i = 0; i < hostCore[0]; i++)
+	for (auto& hoste : hostCoreTask)
 	{
-		int coreid = i;
-		int hostid = core2hostcore[coreid].first;
-		int realcoreid = core2hostcore[coreid].second;
-		hostCoreFinishTimeTemp[hostid][realcoreid] = hostCoreFinishTime[0][i];
+		for (int corei = 0; corei < hoste.size(); corei++)
+		{
+			int hostid = core2hostcore[corei].first;
+			int coreid = core2hostcore[corei].second;
+			hostCoreTaskTemp[hostid][coreid] = hoste[corei];
+		}
 	}
 
+	runLoc = runlocTemp;
+	hostCoreTask = hostCoreTaskTemp;
+	calculateBlockPTrans();
 
-
-
-
-
-
-
-
+	//修改hosttask的时间
+	hostCoreFinishTimeTemp.resize(numHost);
+	for (int i = 0; i < numHost; i ++)
+	{
+		for (int j = 0; j < hostCore[i]; j++)
+		{
+			double begin_time = 0;
+			for (int taski = 0; taski < hostCoreTask[i][j].size(); taski++)
+			{
+				auto& taske = hostCoreTask[i][j][taski];
+				int jobid = std::get<0>(taske);
+				int blockid = std::get<1>(taske);
+				std::get<2>(taske) = std::get<2>(taske) + begin_time;
+				std::get<3>(taske) = std::get<2>(taske) + blockPlusTrans[jobid][blockid];
+				begin_time = std::get<3>(taske);
+			}
+			hostCoreFinishTimeTemp[i].push_back(begin_time);
+		}
+	}
+	hostCoreFinishTime = hostCoreFinishTimeTemp;
 }
 
 void ResourceScheduler::adjustTime()
