@@ -3,9 +3,9 @@
 #include "./Util.h"
 
 int main() {
-	int taskType = 2;
+	int taskType = 1;
 	int caseID = 1;
-	ResourceScheduler rs(taskType, caseID, 1); // 0 random; 1 file;
+	ResourceScheduler rs(taskType, caseID, 0); // 0 random; 1 file;
 	rs.Initial();
 	//generator(rs,taskType);
 	if (taskType == 1) {
@@ -17,6 +17,8 @@ int main() {
 		ResourceScheduler origin = rs;
 		rs.transferToHost0();
 		rs.scheduleDeng();
+		rs.resolveFromHost0(origin);
+		rs.adjustTime();
 
 	}
 	
