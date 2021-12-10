@@ -37,6 +37,7 @@ public:
 	vector<double> jobTime;                 //ÿ��job�������е���ʱ�� 2021++
 	vector<double> jobSize;               //ÿ��job�ܵĴ�С2021+++
 
+	vector<pair<int, int>> core2hostcore;
 	ResourceScheduler(int, int, int);
 
 	void Initial();
@@ -46,8 +47,12 @@ public:
 	void scheduleTwoStep2();
 	void scheduleDeng();
 
+
 	void transferToHost0();
 
+
+	void resultFormator(ResourceScheduler& databackup);
+  
 	void calculateBlockTime();
 	void outputSolutionFromBlock();
 	void outputSolutionFromCore();
