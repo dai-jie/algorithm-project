@@ -9,11 +9,11 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 	if (generatetype == RandomGenerate) {
 		taskType = tasktype;
 		srand((int)time(0));
-		numJob = 10, numHost = 1, alpha = 0.01;
+		numJob = 20, numHost = 1, alpha = 0.01;
 		if (taskType == 2) St = 500;
 		int minCore = 3, maxCore = 10; //number of cores
 		//int minCore = 3, maxCore = 20;
-		int minBlock = 20, maxBlock = 50; //number of blocks
+		int minBlock = 5, maxBlock = 20; //number of blocks
 		int minSize = 50, maxSize = 200; //size of blocks
 		double minSpeed = 20, maxSpeed = 80;
 		hostCore.resize(numHost);
@@ -105,6 +105,12 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 			dataSize[i].resize(jobBlock[i]);
 			for (int j = 0; j < jobBlock[i]; j++)
 				cin >> dataSize[i][j];
+		}
+		location.resize(numJob);                    //任务一无此项
+		for (int i = 0; i < numJob; i++) {
+			location[i].resize(jobBlock[i]);
+			for (int j = 0; j < jobBlock[i]; j++)
+				cin >> location[i][j];
 		}
 	}
 

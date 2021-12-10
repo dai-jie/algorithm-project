@@ -97,6 +97,7 @@ void ResourceScheduler::transferToHost0() {
 		for (int j = 0; j < hostCore[i]; j++) {
 			core2hostcore[index].first = i;
 			core2hostcore[index].second = j;
+			index++;
 		}
 	}
 	hostCore[0] = allCoreNum;
@@ -131,7 +132,7 @@ void ResourceScheduler::resolveFromHost0(ResourceScheduler& databackup)
 			int rankid = std::get<2>(runloci);
 			int hostid = core2hostcore[coreid].first;
 			int realcoreid = core2hostcore[coreid].second;
-			runlocTemp[i][j] = std::make_tuple(hostid, realcoreid, rankid);
+			runlocTemp[i][j] = std::make_tuple(hostid, realcoreid, rankid + 1);
 		}
 	}
 
@@ -209,7 +210,7 @@ void ResourceScheduler::adjustTime()
 	for (int jobi = 0; jobi < numJob; jobi++)
 	{
 		double max_begin = 0;
-		for (int i = 0; i < jobStartBlock.size(); i++)
+		for (int i = 0; i < jobStartBlock[jobi].size(); i++)
 		{
 			int block = jobStartBlock[jobi][i];
 			auto& runLocE = runLoc[jobi][block];

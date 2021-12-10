@@ -3,7 +3,7 @@
 #include "./Util.h"
 
 int main() {
-	int taskType = 1;
+	int taskType = 2;
 	int caseID = 1;
 	ResourceScheduler rs(taskType, caseID, 0); // 0 random; 1 file;
 	rs.Initial();
