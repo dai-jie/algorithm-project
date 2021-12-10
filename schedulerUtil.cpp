@@ -100,6 +100,13 @@ void ResourceScheduler::transferToHost0() {
 		}
 	}
 	hostCore[0] = allCoreNum;
+
+	//修改几个存储结果的变量的维数
+	hostCoreTask.resize(1);
+	hostCoreTask[0].resize(hostCore[0]);
+
+	hostCoreFinishTime.resize(1);
+	hostCoreFinishTime[0].resize(hostCore[0]);
 }
 
 // give datasize, runloc,hostCoreTask rewrite these variables with core2hostTable core2coreTable
