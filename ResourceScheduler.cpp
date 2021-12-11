@@ -30,14 +30,25 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 		cout << "\n\n";
     
 		cout << "hostCore:\n";
-		for (int i = 0; i < numHost; i++) {
-			do {
-				hostCore[i] = rand() % (maxCore - minCore + 1) + minCore;
-				//cout << hostCore[i] << endl;
-			} while (alpha >= 1.0 / (hostCore[i] - 1));
+		int allcore = 0;
+		while (alpha >= 1.0 / (allcore - 1)) {
+			allcore = 0;
+			for (int i = 0; i < numHost; i++) {
+				do {
+					hostCore[i] = rand() % (maxCore - minCore + 1) + minCore;
+					//cout << hostCore[i] << endl;
+					allcore += hostCore[i];
+				} while (alpha >= 1.0 / (hostCore[i] - 1));
 
+				//cout << hostCore[i] << " ";
+			}
+
+		} 
+
+		for (int i = 0; i < numHost; i++) {
 			cout << hostCore[i] << " ";
 		}
+		
 
 		cout << "\n\njobBlockNumber:\n";
 		for (int i = 0; i < numJob; i++) {
@@ -202,7 +213,7 @@ void ResourceScheduler::outputSolutionFromCore() {
 	}
 	cout << "The maximum finish time of hosts: " << maxHostTime << "\n";
 	cout << "The total efficacious running time: " << totalRunningTime << "\n";
-	cout << "Utilization rate: " << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << "\n\n";
+	cout << "Utilization rate: " << setprecision(5) << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << "\n\n";
 }
 
 void ResourceScheduler::visualization() {
