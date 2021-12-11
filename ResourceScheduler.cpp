@@ -9,9 +9,9 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 	if (generatetype == RandomGenerate) {
 		taskType = tasktype;
 		srand((int)time(0));
-		numJob = 20, numHost = 1, alpha = 0.01;
+		numJob = 20, numHost = 4, alpha = 0.07;
 		if (taskType == 2) St = 500;
-		int minCore = 3, maxCore = 10; //number of cores
+		int minCore = 3, maxCore = 20; //number of cores
 		//int minCore = 3, maxCore = 20;
 		int minBlock = 5, maxBlock = 20; //number of blocks
 		int minSize = 50, maxSize = 200; //size of blocks
@@ -76,6 +76,8 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 			}
 			cout << endl;
 		}
+
+		cout << "\n\n-----------Generator ends.--------------\n\n";
 	}
 	else if (generatetype == ReadFromFile) {
 		taskType = tasktype;
@@ -129,7 +131,6 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 	for (int i = 0; i < numHost; i++)
 		hostCoreFinishTime[i].resize(hostCore[i], 0);
 
-	cout << "\n\n-----------Generator ends.--------------\n\n";
 }
 
 void ResourceScheduler::schedule() {
@@ -168,7 +169,7 @@ void ResourceScheduler::schedule() {
 }
 
 void ResourceScheduler::outputSolutionFromBlock() {
-	cout << "\nTask2 Solution (Block Perspective) of Teaching Assistant:\n\n";
+	cout << "\nTask2 Solution (Block Perspective) of Team08:\n\n";
 	for (int i = 0; i < numJob; i++) {
 		double speed = g(jobCore[i]);
 		cout << "Job" << i << " obtains " << jobCore[i] << " cores (speed=" << speed << ") and finishes at time " << jobFinishTime[i] << ": \n";
@@ -183,7 +184,7 @@ void ResourceScheduler::outputSolutionFromBlock() {
 }
 
 void ResourceScheduler::outputSolutionFromCore() {
-	cout << "\nTask2 Solution (Core Perspective) of Teaching Assistant:\n\n";
+	cout << "\nTask2 Solution (Core Perspective) of Team08:\n\n";
 	double maxHostTime = 0, totalRunningTime = 0.0;
 	for (int i = 0; i < numHost; i++) {
 		double hostTime = *max_element(hostCoreFinishTime[i].begin(), hostCoreFinishTime[i].end());
