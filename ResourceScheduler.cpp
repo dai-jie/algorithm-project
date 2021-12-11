@@ -5,11 +5,11 @@
 using namespace std;
 
 
-ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype) {
+ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype, double para_alpha) {
 	if (generatetype == RandomGenerate) {
 		taskType = tasktype;
 		srand((int)time(0));
-		numJob = 20, numHost = 4, alpha = 0.07;
+		numJob = 20, numHost = 4, alpha = para_alpha;
 		if (taskType == 1) numHost = 1;
 		if (taskType == 2) St = 500;
 		int minCore = 3, maxCore = 20; //number of cores
@@ -24,13 +24,13 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 		location.resize(numJob);
 
 
-		cout << "\n\n-----------Generator starts.--------------\n\n";
+		//cout << "\n\n-----------Generator starts.--------------\n\n";
 
-		cout << "numJob = " << numJob << ", numHost = " << numHost << ", alpha = " << alpha;
-		if (taskType == 2) cout << ", St = " << St;
-		cout << "\n\n";
+		//cout << "numJob = " << numJob << ", numHost = " << numHost << ", alpha = " << alpha;
+		//if (taskType == 2) cout << ", St = " << St;
+		//cout << "\n\n";
     
-		cout << "hostCore:\n";
+		//cout << "hostCore:\n";
 		int allcore = 0;
 		while (alpha >= 1.0 / (allcore - 1)) {
 			allcore = 0;
@@ -47,50 +47,50 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 		} 
 
 		for (int i = 0; i < numHost; i++) {
-			cout << hostCore[i] << " ";
+			//cout << hostCore[i] << " ";
 		}
 		
 
-		cout << "\n\njobBlockNumber:\n";
+		//cout << "\n\njobBlockNumber:\n";
 		for (int i = 0; i < numJob; i++) {
 			jobBlock[i] = rand() % (maxBlock - minBlock + 1) + minBlock;
-			cout << jobBlock[i] << " ";
+			//cout << jobBlock[i] << " ";
 		}
 
 
-		cout << "\n\njobCalculatingSpeed:\n";
+		//cout << "\n\njobCalculatingSpeed:\n";
 		for (int i = 0; i < numJob; i++)
 		{
 			Sc[i] = rand() % int(maxSpeed - minSpeed + 1) + minSpeed;
-			cout << Sc[i] << " ";
+			//cout << Sc[i] << " ";
 		}
 
-		cout << "\n\nblockDataSize:\n";
+		//cout << "\n\nblockDataSize:\n";
 		for (int i = 0; i < numJob; i++)
 		{
 			dataSize[i].resize(jobBlock[i]);
 			for (int j = 0; j < jobBlock[i]; j++) {
 				dataSize[i][j] = rand() % (maxSize - minSize + 1) + minSize;
 				//dataSize[i][j] = fabs(std::normal_distribution<double> n(4, 1.5));
-				std::cout << dataSize[i][j] << " ";
+				//std::cout << dataSize[i][j] << " ";
 			}
-			cout << endl;
+			//cout << endl;
 		}
 
     
 
-		std::cout << "\njobBlockInitialLocation:\n";
+		//std::cout << "\njobBlockInitialLocation:\n";
 		for (int i = 0; i < numJob; i++)
 		{
 			location[i].resize(jobBlock[i]);
 			for (int j = 0; j < jobBlock[i]; j++) {
 				location[i][j] = rand() % numHost;
-				cout << location[i][j] << " ";
+				//cout << location[i][j] << " ";
 			}
-			cout << endl;
+			//cout << endl;
 		}
 
-		cout << "\n\n-----------Generator ends.--------------\n\n";
+		//cout << "\n\n-----------Generator ends.--------------\n\n";
 	}
 	else if (generatetype == ReadFromFile) {
 		taskType = tasktype;
@@ -206,30 +206,32 @@ void ResourceScheduler::outputSolutionFromBlock() {
 void ResourceScheduler::outputSolutionFromCore() {
 	if (taskType == 2)
 	{
-		cout << "\nTask2 Solution (Core Perspective) of Team08:\n\n";
+		//cout << "\nTask2 Solution (Core Perspective) of Team08:\n\n";
 	}
 	else
 	{
-		cout << "\nTask1 Solution (Core Perspective) of Team08:\n\n";
+		//cout << "\nTask1 Solution (Core Perspective) of Team08:\n\n";
 	}
 	double maxHostTime = 0, totalRunningTime = 0.0;
 	for (int i = 0; i < numHost; i++) {
 		double hostTime = *max_element(hostCoreFinishTime[i].begin(), hostCoreFinishTime[i].end());
 		maxHostTime = max(hostTime, maxHostTime);
 		totalRunningTime += accumulate(hostCoreFinishTime[i].begin(), hostCoreFinishTime[i].end(), 0.0);
-		cout << "Host" << i << " finishes at time " << hostTime << ":\n\n";
+		//cout << "Host" << i << " finishes at time " << hostTime << ":\n\n";
 		for (int j = 0; j < hostCore[i]; j++) {
-			cout << "\tCore" << j << " has " << hostCoreTask[i][j].size() << " tasks and finishes at time " << hostCoreFinishTime[i][j] << ":\n";
+			//cout << "\tCore" << j << " has " << hostCoreTask[i][j].size() << " tasks and finishes at time " << hostCoreFinishTime[i][j] << ":\n";
 			for (int k = 0; k < hostCoreTask[i][j].size(); k++) {
-				cout << "\t\tJ" << setw(2) << setfill('0') << get<0>(hostCoreTask[i][j][k]) << ", B" << setw(2) << setfill('0') << get<1>(hostCoreTask[i][j][k]) << ", runTime " << fixed << setprecision(1) << setw(5) << setfill('0') << get<2>(hostCoreTask[i][j][k]) << " to " << fixed << setprecision(1) << setw(5) << setfill('0') << get<3>(hostCoreTask[i][j][k]) << "\n";
+				//cout << "\t\tJ" << setw(2) << setfill('0') << get<0>(hostCoreTask[i][j][k]) << ", B" << setw(2) << setfill('0') << get<1>(hostCoreTask[i][j][k]) << ", runTime " << fixed << setprecision(1) << setw(5) << setfill('0') << get<2>(hostCoreTask[i][j][k]) << " to " << fixed << setprecision(1) << setw(5) << setfill('0') << get<3>(hostCoreTask[i][j][k]) << "\n";
 			}
-			cout << "\n";
+			//cout << "\n";
 		}
-		cout << "\n\n";
+		//cout << "\n\n";
 	}
-	cout << "The maximum finish time of hosts: " << maxHostTime << "\n";
-	cout << "The total efficacious running time: " << totalRunningTime << "\n";
-	cout << "Utilization rate: " << setprecision(5) << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << "\n\n";
+	//cout << "The maximum finish time of hosts: " << maxHostTime << "\n";
+	//cout << "The total efficacious running time: " << totalRunningTime << "\n";
+	//cout << "Utilization rate: " << setprecision(5) << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << "\n\n";
+	//cout << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << endl;
+	utilization = totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime;
 }
 
 void ResourceScheduler::visualization() {

@@ -12,6 +12,7 @@
 #include<utility>
 using namespace std;
 
+
 class ResourceScheduler {
 public:
 	int taskType; // 1 or 2
@@ -33,9 +34,12 @@ public:
 	vector<vector<vector<tuple<int, int, double, double>>>> hostCoreTask; // Core perspective: host->core->task-> <job,block,startTime,endTime>
 	vector<vector<double>> hostCoreFinishTime; // host->core->finishTime
 	vector<vector<vector<double>>> blockSch;
+
+	double utilization;
 	
 	//construct func
-	ResourceScheduler(int, int, int);
+
+	ResourceScheduler(int tasktype, int caseID, int generatetype, double para_alpha = 0.07);
 
 	// schedule algorithm
 	vector<double> jobTime;                 //Need initial
