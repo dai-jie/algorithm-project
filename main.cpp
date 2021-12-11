@@ -4,15 +4,15 @@
 
 
 int main() {
-	int taskType = 1;
+	int taskType = 2;
 	int caseID = 1;
 
 	vector<pair<double, double>> beta;
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 500; i++)
 	{
 		double average = 0;
-		double para_alpha = 0.01 + i * 0.0005;
+		double para_alpha = 0.01 + i * 0.00005;
 		cout << para_alpha << " ";
 		for (size_t i = 0; i < 100; i++)
 		{

@@ -232,6 +232,18 @@ void ResourceScheduler::outputSolutionFromCore() {
 	//cout << "Utilization rate: " << setprecision(5) << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << "\n\n";
 	//cout << totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime << endl;
 	utilization = totalRunningTime / accumulate(hostCore.begin(), hostCore.end(), 0.0) / maxHostTime;
+	double average_time = 0;
+	for (int i = 0; i < numJob; i++)
+	{
+		average_time += jobTime[i];
+	}
+	int corenum = 0;
+	for (int i = 0; i < hostCore.size(); i++)
+	{
+		corenum += hostCore[i];
+	}
+	average_time /= corenum;
+	utilization = maxHostTime / average_time;
 }
 
 void ResourceScheduler::visualization() {
