@@ -10,6 +10,7 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 		taskType = tasktype;
 		srand((int)time(0));
 		numJob = 20, numHost = 4, alpha = 0.07;
+		if (taskType == 1) numHost = 1;
 		if (taskType == 2) St = 500;
 		int minCore = 3, maxCore = 20; //number of cores
 		//int minCore = 3, maxCore = 20;
@@ -73,6 +74,7 @@ ResourceScheduler::ResourceScheduler(int tasktype, int caseID, int generatetype)
 				//dataSize[i][j] = fabs(std::normal_distribution<double> n(4, 1.5));
 				std::cout << dataSize[i][j] << " ";
 			}
+			cout << endl;
 		}
 
     
@@ -180,7 +182,14 @@ void ResourceScheduler::schedule() {
 }
 
 void ResourceScheduler::outputSolutionFromBlock() {
-	cout << "\nTask2 Solution (Block Perspective) of Team08:\n\n";
+	if (taskType == 2)
+	{
+		cout << "\nTask2 Solution (Block Perspective) of Team08:\n\n";
+	}
+	else
+	{
+		cout << "\nTask1 Solution (Block Perspective) of Team08:\n\n";
+	}
 	for (int i = 0; i < numJob; i++) {
 		double speed = g(jobCore[i]);
 		cout << "Job" << i << " obtains " << jobCore[i] << " cores (speed=" << speed << ") and finishes at time " << jobFinishTime[i] << ": \n";
@@ -195,7 +204,14 @@ void ResourceScheduler::outputSolutionFromBlock() {
 }
 
 void ResourceScheduler::outputSolutionFromCore() {
-	cout << "\nTask2 Solution (Core Perspective) of Team08:\n\n";
+	if (taskType == 2)
+	{
+		cout << "\nTask2 Solution (Core Perspective) of Team08:\n\n";
+	}
+	else
+	{
+		cout << "\nTask1 Solution (Core Perspective) of Team08:\n\n";
+	}
 	double maxHostTime = 0, totalRunningTime = 0.0;
 	for (int i = 0; i < numHost; i++) {
 		double hostTime = *max_element(hostCoreFinishTime[i].begin(), hostCoreFinishTime[i].end());

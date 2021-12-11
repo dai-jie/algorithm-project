@@ -10,8 +10,6 @@ int main() {
 	//generator(rs,taskType);
 	if (taskType == 1) {
 		rs.scheduleDeng();
-		rs.scheduleTwoStep();
-		rs.scheduleTwoStep2();
 	}
 	else if (taskType == 2) {
 		ResourceScheduler origin = rs;
